@@ -5,6 +5,17 @@ const handleCastErrorDB = (err) => {
     return new ApiError(message, 400);
 };
 
+const HandleValidationError = (err, res) => {
+    const error = Object.values(err.errors).map(el => el.message).join('. ');
+    const message = `Invalid input data. ${error}`;
+    return new ApiError(message, 400);
+};
+
+const handleDuplicationError = (err) => {
+    const message = `Duplicate field value: ${err.keyValue.name}. try something different`;
+    return new ApiError(message, 400);
+};
+
 const productionError = (err, res) => {
     if (err.isOperational) {
         res.status(err.statusCode).json({
@@ -39,13 +50,25 @@ const errorHandlar = (err, req, res, next) => {
         if (err.name === 'CastError') {
             error = handleCastErrorDB(error);
         }
-
+        if (err.code == 11000) {
+            error = handleDuplicationError(error);
+        }
+        if (err.name === 'ValidationError') {
+            error = HandleValidationError(error);
+        }
         productionError(error, res);
         return;
-    } else if (process.env.NODE_ENV === 'deveopment') {
+    } else if (process.env.NODE_ENV === 'development') {
         developmentError(err, res);
         return;
     }
+    res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message,
+        error: err,
+        stack: err.stack
+    });
+    return;
 }
 
 export { errorHandlar };
