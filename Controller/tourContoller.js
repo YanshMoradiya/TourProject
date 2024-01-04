@@ -26,7 +26,6 @@ const creatNewTour = catchAsync(async (req, res) => {
 const getTour = catchAsync(async (req, res, next) => {
     const features = new ApiFetures(Tour.findById(req.params._id), { fields: '-isSecrete,-__v' }).limiteFields();
     const tour = await features.query;
-    // const tour = await Tour.findById(req.params._id).catch(err => null);
     if (!tour) {
         throw new AppError('Tour of this id not found', 404);
     }

@@ -20,7 +20,7 @@ const productionError = (err, res) => {
     }
 };
 
-const developmentError = (err, req, res) => {
+const developmentError = (err, res) => {
     res.status(err.statusCode).json({
         status: err.status,
         message: err.message,
@@ -34,23 +34,24 @@ const errorHandlar = (err, req, res, next) => {
     err.statusCode = err.statusCode || 500;
     err.status = err.status || 'error';
 
-    // if (process.env.NODE_ENV === 'production') {
-    //     let error = { ...err };
-    //     if (err.name === 'CastError') {
-    //         error = handleCastErrorDB(error);
-    //     }
-    //     productionError(error, res);
-    // } else if (process.env.NODE_ENV === 'development') {
-    //     developmentError(err, req, res, next);
-    // }
-
-    res.status(err.statusCode).json({
-        status: err.status,
-        message: err.message,
-        error: err,
-        stack: err.stack
-    });
-
+    if (process.env.NODE_ENV === 'production') {
+        let error = { ...err };
+        if (err.name === 'CastError') {
+            error = handleCastErrorDB(error);
+        }
+        productionError(error, res);
+        return;
+    } else if (process.env.NODE_ENV === 'deveopment') {
+        developmentError(err, res);
+        return;
+    }
+    // res.status(err.statusCode).json({
+    //     status: err.status,
+    //     message: err.message,
+    //     error: err,
+    //     stack: err.stack
+    // });
+    return;
 }
 
 export { errorHandlar };
