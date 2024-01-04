@@ -39,19 +39,13 @@ const errorHandlar = (err, req, res, next) => {
         if (err.name === 'CastError') {
             error = handleCastErrorDB(error);
         }
+
         productionError(error, res);
         return;
     } else if (process.env.NODE_ENV === 'deveopment') {
         developmentError(err, res);
         return;
     }
-    // res.status(err.statusCode).json({
-    //     status: err.status,
-    //     message: err.message,
-    //     error: err,
-    //     stack: err.stack
-    // });
-    return;
 }
 
 export { errorHandlar };

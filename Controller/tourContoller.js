@@ -1,6 +1,6 @@
 import { Tour } from "../models/tourModel.js";
 import { ApiFetures } from "../utils/apiFeatures.js";
-import { ApiError } from "../utils/appError.js";
+import { ApiError } from "../utils/apiError.js";
 import { catchAsync } from "../utils/catchAsync.js";
 
 

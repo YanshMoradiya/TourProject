@@ -3,7 +3,7 @@ import { userRouter } from './Routs/userRouter.js';
 import { tourRouter } from './Routs/tourRouter.js';
 import morgan from 'morgan';
 import { errorHandlar } from './Controller/errorContoller.js';
-import { ApiError } from './utils/appError.js';
+import { ApiError } from './utils/apiError.js';
 
 const app = express();
 app.use(express.json());

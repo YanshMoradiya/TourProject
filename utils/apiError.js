@@ -10,4 +10,4 @@ class ApiError extends Error {
     }
 }
 
-export { AppError };
+export { ApiError };
