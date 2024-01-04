@@ -1,8 +1,8 @@
-import { AppError } from "../utils/appError.js";
+import { ApiError } from "../utils/apiError.js";
 
 const handleCastErrorDB = (err) => {
     const message = `Invalid ${err.path} : ${err.value}`;
-    return new AppError(message, 400);
+    return new ApiError(message, 400);
 };
 
 const productionError = (err, res) => {

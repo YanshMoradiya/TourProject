@@ -1,6 +1,6 @@
 import { Tour } from "../models/tourModel.js";
 import { ApiFetures } from "../utils/apiFeatures.js";
-import { AppError } from "../utils/appError.js";
+import { ApiError } from "../utils/appError.js";
 import { catchAsync } from "../utils/catchAsync.js";
 
 
@@ -27,7 +27,7 @@ const getTour = catchAsync(async (req, res, next) => {
     const features = new ApiFetures(Tour.findById(req.params._id), { fields: '-isSecrete,-__v' }).limiteFields();
     const tour = await features.query;
     if (!tour) {
-        throw new AppError('Tour of this id not found', 404);
+        throw new ApiError('Tour of this id not found', 404);
     }
     res.status(200).json({ status: "success", data: { tour } });
 });
@@ -39,7 +39,7 @@ const updateTour = catchAsync(async (req, res, next) => {
     }), { fields: '-isSecrete,-__v' }).limiteFields();
     const updatedTour = await features.query;
     if (!updatedTour) {
-        return next(new AppError('Tour not found', 404));
+        return next(new ApiError('Tour not found', 404));
     }
     res.status(200).json({ status: "success", data: { updatedTour } });
 });
@@ -49,7 +49,7 @@ const deleteTour = catchAsync(async (req, res, next) => {
     const tour = await deltetedTour.query;
     if (!tour) {
         // console.log('call');
-        return next(new AppError('Tour not found', 404));
+        return next(new ApiError('Tour not found', 404));
     }
     res.status(204).json({ status: "success", message: "successfully deleted!" });
 });
@@ -81,7 +81,7 @@ const getTourStats = catchAsync(async (req, res, next) => {
         }
     ]);
     if (!tourStats) {
-        return next(new AppError('data not found', 404));
+        return next(new ApiError('data not found', 404));
     }
     res.status(200).json({ status: "success", data: { tourStats } });
 });
@@ -123,7 +123,7 @@ const getMonthlyPlan = catchAsync(async (req, res, next) => {
         }
     ]);
     if (!plan) {
-        return next(new AppError('plan not found', 404));
+        return next(new ApiError('plan not found', 404));
     }
     res.status(200).json({ status: "success", data: { plan } });
 });

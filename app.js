@@ -3,7 +3,7 @@ import { userRouter } from './Routs/userRouter.js';
 import { tourRouter } from './Routs/tourRouter.js';
 import morgan from 'morgan';
 import { errorHandlar } from './Controller/errorContoller.js';
-import { AppError } from './utils/appError.js';
+import { ApiError } from './utils/appError.js';
 
 const app = express();
 app.use(express.json());
@@ -18,7 +18,7 @@ app.use('/api/v1/', userRouter);
 app.use('/api/v1/', tourRouter);
 
 app.all('*', (req, res, next) => {
-    next(new AppError(`this url ${req.url} is not found on server...`, 404));
+    next(new ApiError(`this url ${req.url} is not found on server...`, 404));
 });
 
 app.use(errorHandlar);
