@@ -29,7 +29,8 @@ const UserSchema = new Schema({
     passwordConfirm: {
         type: String,
         require: [true, 'please confirm your password...'],
-    }
+    },
+    passwordChangeAt: Date,
 });
 
 UserSchema.pre('save', async function (next) {
@@ -41,6 +42,15 @@ UserSchema.pre('save', async function (next) {
 
 const comparePassword = async (candidatePassword, userPassword) => {
     return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+UserSchema.methods.isPasswordChange = function (JWTTimeStramp) {
+    // console.log(this)
+    if (this.passwordChangeAt) {
+        const passwordChange = parseInt(this.passwordChangeAt.getTime() / 1000, 10);
+        return passwordChange > JWTTimeStramp;
+    }
+    return false;
 };
 
 const User = mongoose.model('User', UserSchema);

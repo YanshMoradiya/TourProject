@@ -2,16 +2,12 @@ import { User, comparePassword } from "../models/userModel.js";
 import { catchAsync } from "../utils/catchAsync.js";
 import jwt from 'jsonwebtoken';
 import { ApiError } from "../utils/apiError.js";
+import { promisify } from 'util';
 
 const signToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION });
 
 const signUp = catchAsync(async (req, res, next) => {
-    const newUser = await User.create({
-        _id: req.body._id,
-        email: req.body.email,
-        password: req.body.password,
-        passwordConfirm: req.body.passwordConfirm
-    });
+    const newUser = await User.create(req.body);
 
     const token = signToken(newUser._id);
 
@@ -31,7 +27,8 @@ const logIn = catchAsync(async (req, res, next) => {
         return next(new ApiError("please provide a valid email and password.", 400));
     };
 
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email: email }).select('+password');
+    // console.log(user);
     const compare = await comparePassword(password, user.password);
 
     if (!user || !compare) {
@@ -57,6 +54,17 @@ const protect = catchAsync(async (req, res, next) => {
         next(new ApiError('You are not logged in please login again...', 401));
     }
 
+    const decode = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    const currentUser = await User.findById(decode.id);
+    if (!currentUser) {
+        return next(new ApiError('user from this token is not exist', 401));
+    };
+    const isPasswordChanged = currentUser.isPasswordChange(decode.iat);
+    if (isPasswordChanged) {
+        return next(new ApiError('password was changed.please logedin again.', 401));
+    };
+
+    req.user = currentUser;
     next();
 });
 

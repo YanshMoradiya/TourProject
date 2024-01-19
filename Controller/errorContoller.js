@@ -16,6 +16,14 @@ const handleDuplicationError = (err) => {
     return new ApiError(message, 400);
 };
 
+const handleJSONWebTokenError = (err) => {
+    return new ApiError('invalid Token,please login again.', 401);
+};
+
+const handleTokenExpiredError = (err) => {
+    return new ApiError('token expired.please login again.', 401);
+};
+
 const productionError = (err, res) => {
     if (err.isOperational) {
         res.status(err.statusCode).json({
@@ -56,18 +64,24 @@ const errorHandlar = (err, req, res, next) => {
         if (err.name === 'ValidationError') {
             error = HandleValidationError(error);
         }
+        if (err.name === 'JsonWebTokenError') {
+            error = handleJSONWebTokenError(error);
+        }
+        if (err.name === 'TokenExpiredError') {
+            error = handleTokenExpiredError(error);
+        };
         productionError(error, res);
         return;
     } else if (process.env.NODE_ENV === 'development') {
         developmentError(err, res);
         return;
     }
-    res.status(err.statusCode).json({
-        status: err.status,
-        message: err.message,
-        error: err,
-        stack: err.stack
-    });
+    // res.status(err.statusCode).json({
+    //     status: err.status,
+    //     message: err.message,
+    //     error: err,
+    //     stack: err.stack
+    // });
     return;
 }
 
